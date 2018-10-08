@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+        "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.StudentDao">
+    <resultMap id="BaseResultMap" type="entity.Student">
+        <id column="Uid" property="uid" jdbcType="BIGINT"/>
+        <result column="Name" property="name" jdbcType="VARCHAR"/>
+        <result column="Age" property="age" jdbcType="INTEGER"/>
+        <result column="ClassId" property="classid" jdbcType="BIGINT"/>
+    </resultMap>
+    <sql id="Base_Column_List">
+    Uid, Name, Age, ClassId
+  </sql>
+
+    <!--添加一个学生的信息-->
+    <insert id="addStudent">
+      insert into student (Uid, Name, Age,  ClassId)
+      VALUES (#{student.uid}, #{student.name}, #{student.age}, #{student.classid} )
+   </insert>
+
+    <!--批量添加学生-->
+    <insert id="addStudentList">
+        insert into student(Uid, Name, Age, ClassId)
+        values
+        <foreach collection="studentList" item="item" open=""  close="" separator=",">
+            (#{item.uid},#{item.name},#{item.age},#{item.classid})
+        </foreach>
+    </insert>
+
+    <!--选择性添加学生信息（非空字段）-->
+    <insert id="addStudentSelective">
+        insert into student
+        <trim prefix="(" suffix=")" suffixOverrides=","> <!--suffixOverrides="," 会忽略掉ClassId, 中的,-->
+            <if test="student.uid!=null">
+                Uid,
+            </if>
+            <if test="student.name!=null">
+                Name,
+            </if>
+            <if test="student.age!=null">
+                Age,
+            </if>
+            <if test="student.classid!=null">
+                ClassId,
+            </if>
+        </trim>
+        <trim prefix="values(" suffix=")" suffixOverrides=",">
+            <if test="student.uid != null">
+                #{student.uid},
+            </if>
+            <if test="student.name != null">
+                #{student.name},
+            </if>
+            <if test="student.age != null">
+                #{student.age},
+            </if>
+            <if test="student.classid != null">
+                #{student.classid},
+            </if>
+        </trim>
+    </insert>
+
+    <!--根据id更新部分数据-->
+    <update id="updateByPrimaryKeySelective">
+        update student
+        <set>
+            <if test="student.name != null">
+                Name = #{student.name},
+            </if>
+            <if test="student.age != null">
+                Age = #{student.age},
+            </if>
+            <if test="student.classid != null">
+                ClassId = #{student.classid},
+            </if>
+        </set>
+        where Uid = #{student.uid}
+    </update>
+
+    <!--根据id更新所有字段-->
+    <update id="updateByPrimaryKey">
+    update student
+    set Name = #{student.name},
+      Age = #{student.age},
+      ClassId = #{student.classid}
+    where Uid = #{student.uid}
+  </update>
+
+    <!--根据id删除一条学生数据-->
+    <delete id="deleteByPrimaryKey">
+    delete from student
+    where Uid = #{uid}
+  </delete>
+
+    <!--根据ids批量删除学生数据-->
+   <delete id="deleteStudentListByIds">
+       delete from student
+       where
+           <foreach collection="ids" item="item" open="Uid IN("  close=")" separator=",">
+               #{item}
+           </foreach>
+   </delete>
+
+    <!--根据id查找学生数据-->
+    <select id="selectByPrimaryKey" resultMap="BaseResultMap">
+        select
+        <include refid="Base_Column_List"/>
+        from student
+        where Uid=#{uid}
+    </select>
+
+
+</mapper>

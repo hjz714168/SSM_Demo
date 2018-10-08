@@ -1,0 +1,9 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd" >
+<mapper namespace="dao.StudentClassDao" >
+  <!--查询班级下的学生明细（注:一对多）-->
+  <select id="queryStudentDetail" resultType="vo.StudentClassVO">
+    SELECT sc.*,s.Uid,s.Name,s.Age,s.ClassId as classIds from studentclass sc
+      LEFT JOIN student s ON sc.ClassId=s.ClassId
+  </select>
+</mapper>
